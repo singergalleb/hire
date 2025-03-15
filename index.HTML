@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singer Galle B HP Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .calculator {
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background: white;
+            max-width: 400px;
+        }
+
+        input[type="number"] {
+            width: 90%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button.green {
+            background-color: #28a745;
+        }
+
+        button.blue {
+            background-color: #007bff;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .details {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .hidden-section {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>HIRE SALE PLANNING</h1>
+        <form id="calculatorForm">
+            <input type="number" id="discountedPrice" placeholder="Discounted Price" required>
+            <input type="number" id="period" placeholder="Period" required>
+            <button type="button" class="green" onclick="calculateCustom()">Calculate</button>
+        </form>
+        <div class="result" id="result"></div>
+        <div class="details" id="serviceCharge"></div>
+        <div class="details" id="minimumFirstPayment"></div>
+        <div class="details" id="monthlyPayment"></div>
+        <button type="button" class="blue" onclick="toggleHiddenSection()">Freeze/Unfreeze Downpayment Section</button>
+        <div class="hidden-section" id="downPaymentSection">
+            <input type="number" id="customerMonthlyPayment" placeholder="Customer Monthly Payment">
+            <button type="button" class="green" onclick="calculateDownPayment()">Show Downpay</button>
+            <div class="details" id="downPaymentResult"></div>
+        </div>
+    </div>
+
+    <footer>&copy; 2025 Dilanka Vithanage Singer Showroom Galle-B</footer>
+
+    <script>
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function calculateCustom() {
+            const discountedPrice = parseFloat(document.getElementById('discountedPrice').value);
+            const period = parseFloat(document.getElementById('period').value);
+            const resultElement = document.getElementById('result');
+            const serviceChargeElement = document.getElementById('serviceCharge');
+            const minimumFirstPaymentElement = document.getElementById('minimumFirstPayment');
+            const monthlyPaymentElement = document.getElementById('monthlyPayment');
+            let intermediateResult;
+            let finalResult;
+
+            if (isNaN(discountedPrice) || isNaN(period) || period <= 1) {
+                resultElement.textContent = 'Please enter valid numbers for both fields, and period must be greater than 1.';
+                serviceChargeElement.textContent = '';
+                minimumFirstPaymentElement.textContent = '';
+                monthlyPaymentElement.textContent = '';
+                return;
+            }
+
+            // Calculate intermediate result based on discounted price (F4 logic)
+            if (discountedPrice <= 7500) {
+                intermediateResult = 525;
+            } else if (discountedPrice <= 15000) {
+                intermediateResult = 650;
+            } else if (discountedPrice <= 25000) {
+                intermediateResult = 850;
+            } else if (discountedPrice <= 35000) {
+                intermediateResult = 900;
+            } else if (discountedPrice <= 50000) {
+                intermediateResult = 1100;
+            } else if (discountedPrice <= 60000) {
+                intermediateResult = 1300;
+            } else if (discountedPrice <= 75000) {
+                intermediateResult = 1350;
+            } else if (discountedPrice <= 100000) {
+                intermediateResult = 1450;
+            } else if (discountedPrice <= 150000) {
+                intermediateResult = 2675;
+            } else if (discountedPrice <= 200000) {
+                intermediateResult = 2800;
+            } else if (discountedPrice <= 300000) {
+                intermediateResult = 3900;
+            } else if (discountedPrice <= 400000) {
+                intermediateResult = 5050;
+            } else if (discountedPrice <= 500000) {
+                intermediateResult = 6200;
+            } else if (discountedPrice <= 850000) {
+                intermediateResult = 6700;
+            } else {
+                intermediateResult = 12200;
+            }
+
+            // Calculate final result
+            finalResult = (((discountedPrice * 2.5) / 100) * period) + discountedPrice + intermediateResult;
+
+            // Calculate minimum first payment
+            const minimumFirstPayment = discountedPrice * 0.35;
+
+            // Calculate monthly payment
+            const monthlyPayment = (finalResult - minimumFirstPayment) / (period - 1);
+
+            resultElement.textContent = `Gross Hire Value: ${formatNumber(finalResult)}`;
+            serviceChargeElement.textContent = `Service Charge (G4): ${formatNumber(intermediateResult)}`;
+            minimumFirstPaymentElement.textContent = `Minimum First Payment: ${formatNumber(minimumFirstPayment)}`;
+            monthlyPaymentElement.textContent = `Monthly Payment: ${formatNumber(monthlyPayment)}`;
+
+            // Store final result for downpayment calculation
+            document.getElementById('downPaymentSection').dataset.finalResult = finalResult;
+        }
+
+        function toggleHiddenSection() {
+            const section = document.getElementById('downPaymentSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function calculateDownPayment() {
+            const finalResult = parseFloat(document.getElementById('downPaymentSection').dataset.finalResult);
+            const customerMonthlyPayment = parseFloat(document.getElementById('customerMonthlyPayment').value);
+            const period = parseFloat(document.getElementById('period').value);
+            const downPaymentResultElement = document.getElementById('downPaymentResult');
+
+            if (isNaN(customerMonthlyPayment) || isNaN(finalResult) || isNaN(period) || period <= 1) {
+                downPaymentResultElement.textContent = 'Please enter valid numbers for Customer Monthly Payment and ensure Period is greater than 1.';
+                return;
+            }
+
+            const downPayment = finalResult - (customerMonthlyPayment * (period - 1));
+
+            downPaymentResultElement.textContent = `Down Payment: ${formatNumber(downPayment)}`;
+        }
+    </script>
+</body>
+</html>
